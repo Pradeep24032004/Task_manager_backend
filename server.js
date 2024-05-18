@@ -15,7 +15,17 @@ app.use(express.json());
 app.use(cors()); 
 
 // MongoDB connection
-mongoose.connect(DATABASE_URL).then(() => console.log('MongoDB connected')).catch(err => console.log(err));
+mongoose.connect(DATABASE_URL, {
+  tls: true,
+})
+.then(() => console.log('MongoDB connected'))
+.catch(err => {
+  console.error('MongoDB connection error:', err);
+  if (err.cause) {
+    console.error('Error cause:', err.cause);
+  }
+});
+//mongoose.connect(DATABASE_URL).then(() => console.log('MongoDB connected')).catch(err => console.log(err));
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
