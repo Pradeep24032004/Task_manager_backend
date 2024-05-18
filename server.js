@@ -1,27 +1,26 @@
-//import express from 'express';
+require('dotenv').config();
 const express = require('express');
-
-//import mongoose from 'mongoose';
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-//const passport = require('passport');
-//const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const bcrypt = require('bcryptjs');
 
-const app = express();
+const BASE_URL = process.env.BASE_URL;
+const DATABASE_URL = process.env.DATABASE_URL;
 const PORT = process.env.PORT || 5000;
+
+const app = express();
 
 app.use(express.json());
 app.use(cors()); 
+
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/internassign', {
+mongoose.connect(DATABASE_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-//const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -48,12 +47,7 @@ const TaskSchema = new mongoose.Schema({
   description: String,
 });
 
-/*const Board = mongoose.model('Board', BoardSchema);
-const Task = mongoose.model('Task', TaskSchema);*/
-
 const User = mongoose.model('User', UserSchema);
-
-
 const Board = mongoose.model('Board', BoardSchema);
 const Task = mongoose.model('Task', TaskSchema);
 
@@ -103,8 +97,6 @@ app.delete('/tasks/:id', async (req, res) => {
   res.json({ message: 'Task deleted' });
 });
 
-
-
 // Register
 app.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
@@ -115,16 +107,13 @@ app.post('/register', async (req, res) => {
     }
     user = new User({ name, email, password });
     await user.save();
-    const payload = { user: { id: user.id } };
-    jwt.sign(payload, 'secret', { expiresIn: 360000 }, (err, token) => {
-      if (err) throw err;
-      res.json({ token });
-    });
+    res.json({ msg: 'User registered successfully' });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
   }
 });
+
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -136,28 +125,23 @@ app.post('/login', async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ msg: 'Invalid credentials' });
     }
-    const payload = { user: { id: user.id } };
-    jwt.sign(payload, 'secret', { expiresIn: 360000 }, (err, token) => {
-      if (err) throw err;
-      res.json({ token });
-    });
+    res.json({ msg: 'Login successful' });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
   }
 });
+
 app.get('/user', async (req, res) => {
   const { email } = req.query;
 
   try {
-    // Find the user by email
     const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Return user details
     res.json(user);
   } catch (error) {
     console.error('Error fetching user details:', error);
@@ -166,5 +150,5 @@ app.get('/user', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-}); 
+  console.log(`Server is running on ${BASE_URL}`);
+});
