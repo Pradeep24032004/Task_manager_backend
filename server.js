@@ -13,7 +13,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors()); 
-
+mongoose.set('strictQuery', false);
 // MongoDB connection
 mongoose.connect(DATABASE_URL, {
   useNewUrlParser: true,
