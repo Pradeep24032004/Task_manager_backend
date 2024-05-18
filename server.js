@@ -6,7 +6,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 
 const BASE_URL = process.env.BASE_URL;
-const DATABASE_URL = process.env.DATABASE_URL;
+//const DATABASE_URL = process.env.DATABASE_URL;
 const PORT = process.env.PORT || 5000;
 
 const app = express();
@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(cors()); 
 mongoose.set('strictQuery', false);
 // MongoDB connection
-mongoose.connect(DATABASE_URL, {
+mongoose.connect('mongodb+srv://pradeep24032004:VkeYnTHOvkgw9DFU@assign.goqoznd.mongodb.net/?retryWrites=true&w=majority&appName=assign', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
